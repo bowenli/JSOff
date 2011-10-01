@@ -1,0 +1,3 @@
+content jsoff chrome/
+overlay	chrome://browser/content/browser.xul chrome://jsoff/content/overlay.xul
+skin	jsoff	classic/1.0	skin/

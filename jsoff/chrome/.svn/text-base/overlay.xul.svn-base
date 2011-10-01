@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE overlay >
+<overlay id="jsoff-overlay"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+ <statusbar id="status-bar">
+  <statusbarpanel id="jsoff-statusbar" class="statusbarpanel-menu-iconic" 
+						src="chrome://jsoff/skin/on.png" onclick="jsStatus.run()" />
+ </statusbar>
+
+<script type="application/x-javascript"
+  src="chrome://jsoff/content/overlay.js"/>
+
+</overlay>
