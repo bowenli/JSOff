@@ -1,16 +1,18 @@
-if ("undefined" == typeof(jsoffNamespace)) {
-	var jsoffNamespace = {};
-};
+var widgets = require("widget");
+var tabs = require("tabs");
+var self = require("self");
+var {Cc, Ci} = require("chrome");
 
-jsoffNamespace.ON_IMG = "chrome://jsoff/skin/on.png";
-jsoffNamespace.OFF_IMG = "chrome://jsoff/skin/off.png";
+var jsoff = jsoff || {};
 
-jsoffNamespace.jsStatus = function () {
-	var prefManager = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+jsoff.jsStatus = function () {
+    var prefManager = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+    var widget = null;
 
 	return {
-		startup : function(){
-			this.setStatusBar();
+		init : function(w){
+			widget = w;
+            this.setStatusBar();
 		},
 
 		// run this onClick from the status bar
@@ -22,30 +24,26 @@ jsoffNamespace.jsStatus = function () {
 
 		// something changed, update UI
 		setStatusBar : function(){
-			var statusBar = document.getElementById('jsoff-statusbar');
 			var jsEnabled = prefManager.getBoolPref("javascript.enabled");
-			statusBar.src = jsEnabled ? jsoffNamespace.ON_IMG : jsoffNamespace.OFF_IMG;
+			widget.contentURL = jsEnabled ? self.data.url("on.png") : self.data.url("off.png");
 		}
 	};
 }();
-/*** jsStatus ***/
-
-
 
 // This handles watching preferences for changes to javascript options
-jsoffNamespace.myPrefObserver =
+jsoff.myPrefObserver =
 {
   register: function()
   {
     // First we'll need the preference services to look for preferences.
-    var prefService = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService);
+    var prefService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
 
     // For this._branch we ask that the preferences for extensions.myextension. and children
     this._branch = prefService.getBranch("javascript.");
 
     // Now we queue the interface called nsIPrefBranch2. This interface is described as:  
     // "nsIPrefBranch2 allows clients to observe changes to pref values."
-    this._branch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+    this._branch.QueryInterface(Ci.nsIPrefBranch2);
 
     // Finally add the observer.
     this._branch.addObserver("", this, false);
@@ -64,12 +62,22 @@ jsoffNamespace.myPrefObserver =
     // aData is the name of the pref that's been changed (relative to aSubject)
     switch (aData) {
       case "enabled":
-        jsoffNamespace.jsStatus.setStatusBar();
+        jsoff.jsStatus.setStatusBar();
         break;
     }
   }
 }
 
-jsoffNamespace.myPrefObserver.register();
-window.addEventListener("load", function(e) { jsoffNamespace.jsStatus.startup(); }, false);
+jsoff.myPrefObserver.register();
 
+var widget = widgets.Widget({
+  id: "jsoff-button",
+  label: "JSOff",
+  contentURL: self.data.url("off.png"),
+  width: 16,
+  onClick: function() {
+    jsoff.jsStatus.run();
+  }
+});
+
+jsoff.jsStatus.init(widget);

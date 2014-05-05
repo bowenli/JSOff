@@ -1,7 +1,0 @@
-Name: JSOff
-Author: Bowen Li
-Description: A Firefox extension that allows you to disable and enable javascript using a simple status bar button.
-
-This software is provided free of charge assumes NO LIABILITY in any damage done to your or your belongings. It comes without any warranty without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-This software is released under the terms of the GNU General Public License version 2 as published by the Free Software Foundation. For the full license, see: http://www.gnu.org/licenses/gpl-2.0.html

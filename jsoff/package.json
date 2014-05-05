@@ -1,0 +1,10 @@
+{
+    "name": "jsoff", 
+    "license": "GPLv2", 
+    "author": "Bowen Li", 
+    "version": "1.01", 
+    "fullName": "JSOff", 
+    "id": "jsoff@jsoff.com", 
+    "description": "Add a button to toggle JavaScript on and off.",
+    "permissions": {"private-browsing": true}
+}
