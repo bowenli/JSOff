@@ -1,31 +1,42 @@
-var widgets = require("widget");
-var tabs = require("tabs");
-var self = require("self");
+var buttons = require('sdk/ui/button/action');
 var {Cc, Ci} = require("chrome");
 
 var jsoff = jsoff || {};
 
+jsoff.onIconUrls = {
+    "16": "./on-16.png",
+    "32": "./on-32.png",
+    "64": "./on-64.png"
+  };
+
+jsoff.offIconUrls = {
+    "16": "./off-16.png",
+    "32": "./off-32.png",
+    "64": "./off-64.png"
+  };
+
+
 jsoff.jsStatus = function () {
     var prefManager = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
-    var widget = null;
+    var button = null;
 
 	return {
-		init : function(w){
-			widget = w;
-            this.setStatusBar();
+		init : function(b){
+			button = b;
+            this.setButtonState();
 		},
 
-		// run this onClick from the status bar
+		// run this onClick from the button
 		run : function () {
 			var jsEnabled = prefManager.getBoolPref("javascript.enabled");
 			prefManager.setBoolPref("javascript.enabled", !jsEnabled);
-			// change propogation handled in observer, don't need to call setStatusBar here
+			// change propogation handled in observer, don't need to call setButtonState here
 		},
 
 		// something changed, update UI
-		setStatusBar : function(){
+		setButtonState : function(){
 			var jsEnabled = prefManager.getBoolPref("javascript.enabled");
-			widget.contentURL = jsEnabled ? self.data.url("on.png") : self.data.url("off.png");
+			button.icon = jsEnabled ? jsoff.onIconUrls : jsoff.offIconUrls;
 		}
 	};
 }();
@@ -41,7 +52,7 @@ jsoff.myPrefObserver =
     // For this._branch we ask that the preferences for extensions.myextension. and children
     this._branch = prefService.getBranch("javascript.");
 
-    // Now we queue the interface called nsIPrefBranch2. This interface is described as:  
+    // Now we queue the interface called nsIPrefBranch2. This interface is described as:
     // "nsIPrefBranch2 allows clients to observe changes to pref values."
     this._branch.QueryInterface(Ci.nsIPrefBranch2);
 
@@ -62,22 +73,22 @@ jsoff.myPrefObserver =
     // aData is the name of the pref that's been changed (relative to aSubject)
     switch (aData) {
       case "enabled":
-        jsoff.jsStatus.setStatusBar();
+        jsoff.jsStatus.setButtonState();
         break;
     }
   }
-}
-
+};
 jsoff.myPrefObserver.register();
 
-var widget = widgets.Widget({
+
+// When in the 'customize' view (FF 29), button always defaults to "on"
+var button = buttons.ActionButton({
   id: "jsoff-button",
   label: "JSOff",
-  contentURL: self.data.url("off.png"),
-  width: 16,
+  icon: jsoff.onIconUrls,
   onClick: function() {
-    jsoff.jsStatus.run();
-  }
+     jsoff.jsStatus.run();
+   }
 });
 
-jsoff.jsStatus.init(widget);
+jsoff.jsStatus.init(button);
